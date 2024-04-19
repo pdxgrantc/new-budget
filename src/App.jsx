@@ -227,6 +227,9 @@ function DesktopNavBar() {
             <li className="custom-button">
               <NavLink to="/spending">Spending</NavLink>
             </li>
+            <li className="custom-button">
+              <NavLink to="/settings">Settings</NavLink>
+            </li>
           </>
         )}
         <li className="custom-button">

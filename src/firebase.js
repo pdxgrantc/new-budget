@@ -41,27 +41,36 @@ const SignIn = async () => {
                 accountCreated: new Date(),
                 currentBalance: 0,
                 userVersion: 1,
-                incomeCategories: [
-                    "Salary",
-                    "Investments",
-                    "Gifts",
-                    "Other",
-                ],
-                spendingCategories: [
-                    "Groceries",
-                    "Rent",
-                    "Utilities",
-                    "Entertainment",
-                    "Transportation",
-                    "Restaurants",
-                    "Other",
-                ],
-                spendingAccounts: [
-                    "Debit",
-                    "Credit",
-                    "Cash",
-                    "Other",
-                ],
+                incomeCategories: {
+                    active: [
+                        "Salary",
+                        "Investments",
+                        "Gifts",
+                        "Other",
+                    ],
+                    inactive: []
+                },
+                spendingCategories: {
+                    active: [
+                        "Groceries",
+                        "Rent",
+                        "Utilities",
+                        "Entertainment",
+                        "Transportation",
+                        "Restaurants",
+                        "Other",
+                    ],
+                    inactive: []
+                },
+                spendingAccounts: {
+                    active: [
+                        "Debit",
+                        "Credit",
+                        "Cash",
+                        "Other",
+                    ],
+                    inactive: []
+                },
             });
         }
     } catch (error) {
