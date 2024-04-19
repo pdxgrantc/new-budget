@@ -13,6 +13,7 @@ export default {
       backgroundColor: {
         DEFAULT: '#1a1a1a',
         menuBG: '#404040',
+        announcementYellow: '#ffcc00',
       },
       colors: {
         transparent: 'transparent',

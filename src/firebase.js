@@ -56,6 +56,12 @@ const SignIn = async () => {
                     "Restaurants",
                     "Other",
                 ],
+                spendingAccounts: [
+                    "Debit",
+                    "Credit",
+                    "Cash",
+                    "Other",
+                ],
             });
         }
     } catch (error) {

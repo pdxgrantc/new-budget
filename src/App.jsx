@@ -55,6 +55,7 @@ function Root(props) {
     <div className="text bg-black min-h-screen w-full">
       <NavBarHost />
       <div>
+        <AnnoucementBar />
         {user ? (
           <div
             className="bg h-full flex-grow on_desktop:px-20 on_mobile:px-[3vw] pb-10"
@@ -94,6 +95,29 @@ function Root(props) {
           <p className="mx-auto text-m">Grant Conklin - 2024</p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function AnnoucementBar() {
+  // use state to track if the user has clicked the close button
+  const [closed, setClosed] = useState(false);
+
+  if (closed) {
+    return null;
+  }
+
+  return (
+    <div className="bg-announcementYellow text-black text-center p-2">
+      <p className="text-m">
+        Currently under development; new budget features will be added soon. This is a personal project and is not intended for commercial use.
+      </p>
+      <button
+        className="mx-auto text-m font-semibold"
+        onClick={() => setClosed(true)}
+      >
+        Close
+      </button>
     </div>
   );
 }
@@ -248,9 +272,8 @@ function MobileNavBar() {
             onClick={() => setMenuOpen((prev) => !prev)}
           >
             <MenuIcon
-              className={`hover:text-white h-4/5 w-auto ${
-                menuOpen ? "text-white" : ""
-              }`}
+              className={`hover:text-white h-4/5 w-auto ${menuOpen ? "text-white" : ""
+                }`}
             />
           </button>
         ) : (
