@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 // firebase
 import { auth, db } from "../firebase"
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 
 
 export default function Settings() {
@@ -16,43 +16,44 @@ export default function Settings() {
 }
 
 function ChangeCategories() {
-  const [incomeCategories, setIncomeCategories] = useState()
-  const [spendingAccounts, setSpendingAccounts] = useState()
-  const [spendingCategories, setSpendingCategories] = useState()
+  const [incomeCategories, setIncomeCategories] = useState();
+  const [spendingAccounts, setSpendingAccounts] = useState();
+  const [spendingCategories, setSpendingCategories] = useState();
 
   useEffect(() => {
-    // fetch data from firebase
-    const fetchData = async () => {
-      const user = auth.currentUser
-      const userRef = doc(db, 'users', user.uid)
-      const userDocSnap = await getDoc(userRef)
-      const userData = userDocSnap.data()
+    const user = auth.currentUser;
+    const userRef = doc(db, 'users', user.uid);
+
+    // subscribe to updates
+    const unsubscribe = onSnapshot(userRef, (docSnapshot) => {
+      const userData = docSnapshot.data();
 
       // set data to state
-      setIncomeCategories(userData.incomeCategories)
-      setSpendingAccounts(userData.spendingAccounts)
-      setSpendingCategories(userData.spendingCategories)
-    }
+      setIncomeCategories(userData.incomeCategories);
+      setSpendingAccounts(userData.spendingAccounts);
+      setSpendingCategories(userData.spendingCategories);
+    });
 
-    fetchData()
-  }, [])
+    // unsubscribe on cleanup
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="flex flex-col gap-5">
       <div>
         <div>Income Categories</div>
         <CurrentCategories categories={incomeCategories} />
-        <AddCategory category="incomeCategories" />
+        <AddCategory type="incomeCategories" />
       </div>
       <div>
         <div>Accounts</div>
         <CurrentCategories categories={spendingAccounts} />
-        <AddCategory category="spendingAccounts" />
+        <AddCategory type="spendingAccounts" />
       </div>
       <div>
         <div>Spending Categories</div>
         <CurrentCategories categories={spendingCategories} />
-        <AddCategory category="spendingCategories" />
+        <AddCategory type="spendingCategories" />
       </div>
     </div>
   )
@@ -68,11 +69,20 @@ function CurrentCategories({ categories }) {
   )
 }
 
+function incomeCategories() {
+
+  return (
+    <></>
+  )
+}
+
 function AddCategory({ type }) {
   const [category, setCategory] = useState('');
 
   const handleAddCategory = async (event) => {
     event.preventDefault();
+
+    console.log('Adding category:', category, "type:", type);
 
     // get current user and userRef
     const user = auth.currentUser;
@@ -83,15 +93,15 @@ function AddCategory({ type }) {
     const userData = userDocSnap.data();
 
     // update the correct array
-    if (type === 'income') {
+    if (type === 'incomeCategories') {
       userData.incomeCategories.active.push(category);
       setIncomeCategories(userData.incomeCategories);
-    } else if (type === 'spending') {
-      userData.spendingCategories.active.push(category);
-      setSpendingCategories(userData.spendingCategories);
-    } else if (type === 'account') {
+    } else if (type === 'spendingAccounts') {
       userData.spendingAccounts.active.push(category);
       setSpendingAccounts(userData.spendingAccounts);
+    } else if (type === 'spendingCategories') {
+      userData.spendingCategories.active.push(category);
+      setSpendingCategories(userData.spendingCategories);
     }
 
     // write updated data back to the database
