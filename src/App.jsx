@@ -23,7 +23,8 @@ import { IoMenu as MenuIcon } from "react-icons/io5";
 import google_normal from "./assets/btn_google_signin_dark_normal_web@2x.png";
 import google_pressed from "./assets/btn_google_signin_dark_pressed_web@2x.png";
 
-// import google images from public folder
+// import redux 
+import store from "./redux/store";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -78,6 +79,8 @@ function Root(props) {
         )}
       </div>
 
+      <LogReduxState />
+
       <footer className="bg-black px-20 h-[12.5rem] flex justify-around flex-col">
         <div className="flex flex-col gap-2">
           <p className="mx-auto">Find me here</p>
@@ -120,6 +123,18 @@ function AnnoucementBar() {
       </button>
     </div>
   );
+}
+
+function LogReduxState() {
+  const logState = () => {
+    console.log(store.getState());
+  };
+
+  return (
+    <button className="custom-button" onClick={logState}>
+      Log State
+    </button>
+  )
 }
 
 function SignInDialogue() {

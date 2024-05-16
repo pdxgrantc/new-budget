@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { useDispatch } from 'react-redux';
 
 // Web app's Firebase configuration
 const firebaseConfig = {
@@ -33,7 +34,7 @@ const SignIn = async () => {
         const userDocSnap = await getDoc(userRef);
 
         if (!userDocSnap.exists()) {
-            await setDoc(userRef, {
+            const defaultUserDoc = {
                 displayName: result.user.displayName,
                 email: result.user.email,
                 photoURL: result.user.photoURL,
@@ -71,6 +72,14 @@ const SignIn = async () => {
                     ],
                     inactive: []
                 },
+            }
+
+            await setDoc(userRef, defaultUserDoc).then(() => {
+                // TODO write default user doc to redux store
+                dispatch(setUser(defaultUserDoc)); // dispatch action to set user state
+
+            }).catch((error) => {
+                console.error("Error writing document: ", error);
             });
         }
     } catch (error) {
