@@ -3,6 +3,9 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
+// redux
+import { login } from './src/redux/userSlice'
+
 // Web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAbgm1NnjRz_mLX4aaqR96iUV3AifBoqd8",
@@ -22,7 +25,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // My Helper Functions For Export
-const SignIn = async () => {
+const SignIn = async (dispatch) => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
@@ -32,46 +35,56 @@ const SignIn = async () => {
         const userRef = doc(db, 'users', result.user.uid);
         const userDocSnap = await getDoc(userRef);
 
+        const defaultUserDoc = {
+            displayName: result.user.displayName,
+            email: result.user.email,
+            photoURL: result.user.photoURL,
+            uid: result.user.uid,
+            accountCreated: new Date(),
+            currentBalance: 0,
+            userVersion: 1,
+            incomeCategories: {
+                active: [
+                    "Salary",
+                    "Investments",
+                    "Gifts",
+                    "Other",
+                ],
+                inactive: []
+            },
+            spendingCategories: {
+                active: [
+                    "Groceries",
+                    "Rent",
+                    "Utilities",
+                    "Entertainment",
+                    "Transportation",
+                    "Restaurants",
+                    "Other",
+                ],
+                inactive: []
+            },
+            spendingAccounts: {
+                active: [
+                    "Debit",
+                    "Credit",
+                    "Cash",
+                    "Other",
+                ],
+                inactive: []
+            },
+        };
+
         if (!userDocSnap.exists()) {
-            await setDoc(userRef, {
-                displayName: result.user.displayName,
-                email: result.user.email,
-                photoURL: result.user.photoURL,
-                uid: result.user.uid,
-                accountCreated: new Date(),
-                currentBalance: 0,
-                userVersion: 1,
-                incomeCategories: {
-                    active: [
-                        "Salary",
-                        "Investments",
-                        "Gifts",
-                        "Other",
-                    ],
-                    inactive: []
-                },
-                spendingCategories: {
-                    active: [
-                        "Groceries",
-                        "Rent",
-                        "Utilities",
-                        "Entertainment",
-                        "Transportation",
-                        "Restaurants",
-                        "Other",
-                    ],
-                    inactive: []
-                },
-                spendingAccounts: {
-                    active: [
-                        "Debit",
-                        "Credit",
-                        "Cash",
-                        "Other",
-                    ],
-                    inactive: []
-                },
+            await setDoc(userRef, defaultUserDoc).then(() => {
+                // set the user in the redux store
+                dispatch(login(defaultUserDoc));
+            }).catch((error) => {
+                console.log(error);
             });
+        } else {
+            // set the user in the redux store
+            dispatch(login(userDocSnap.data()));
         }
     } catch (error) {
         console.log(error);

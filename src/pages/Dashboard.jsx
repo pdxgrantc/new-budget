@@ -10,7 +10,6 @@ export default function Dashboard() {
 
 function PrintUserState() {
     const user = useSelector((state) => state.user)
-    const dispatch = useDispatch()
 
     const LogData = () => {
         console.log(user)

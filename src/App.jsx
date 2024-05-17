@@ -25,7 +25,6 @@ import { IoMenu as MenuIcon } from "react-icons/io5";
 import google_normal from "./assets/btn_google_signin_dark_normal_web@2x.png";
 import google_pressed from "./assets/btn_google_signin_dark_pressed_web@2x.png";
 
-
 export default function App() {
   return (
     <BrowserRouter>
