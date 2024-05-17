@@ -127,7 +127,8 @@ function AnnoucementBar() {
 
 function LogReduxState() {
   const logState = () => {
-    console.log(store.getState());
+    // log user slice state 
+    console.log(store.getState().user);
   };
 
   return (
