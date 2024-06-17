@@ -2,33 +2,29 @@ import { db, auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/userSlice';
 
-
 export default function SignIn({ children }) {
     const [user] = useAuthState(auth);
+    const dispatchEvent = useDispatch();
 
     const SignInWithFirebase = async () => {
-
-        let defaultUserDoc = {}
+        let userDoc = {};
 
         const provider = new GoogleAuthProvider();
 
         try {
-            // sign in prompt returns auth result
             const result = await signInWithPopup(auth, provider);
-            // get user document reference for user doc
             const userRef = doc(db, 'users', result.user.uid);
             const userDocSnap = await getDoc(userRef);
 
-            defaultUserDoc = {
+            const defaultUserDoc = {
                 displayName: result.user.displayName,
                 email: result.user.email,
                 photoURL: result.user.photoURL,
                 uid: result.user.uid,
-                accountCreated: new Date(),
+                accountCreated: new Date().toISOString(),  // Convert to ISO string
                 currentBalance: 0,
                 userVersion: 1,
                 incomeCategories: {
@@ -61,30 +57,28 @@ export default function SignIn({ children }) {
                     ],
                     inactive: []
                 },
-            }
+            };
 
             if (!userDocSnap.exists()) {
-                // set user doc with default user doc
-                await setDoc(userRef, defaultUserDoc);
-
-                console.log("new user: ", defaultUserDoc);
-                // Dispatch the setUser action with defaultUserDoc
-                dispatchEvent(setUser(defaultUserDoc));
+                userDoc = defaultUserDoc;
+                await setDoc(userRef, userDoc);
             } else {
-                // get user data from user doc
-                let userData = userDocSnap.data();
-                console.log("existing user: ", userData);
+                let cachedUserDoc = userDocSnap.data();
+                cachedUserDoc.accountCreated = cachedUserDoc.accountCreated.toDate().toISOString();  // Convert to ISO string
 
+                userDoc = cachedUserDoc;
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error);
         }
+
+        console.log(userDoc);
+        dispatchEvent(setUser(userDoc));  // Dispatch the action with serializable data
     };
 
     return (
         <button onClick={SignInWithFirebase}>
             {children}
         </button>
-    )
+    );
 }
