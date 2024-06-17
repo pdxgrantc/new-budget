@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-
 export default function Dashboard() {
   return (
     <div className="flex flex-col">
