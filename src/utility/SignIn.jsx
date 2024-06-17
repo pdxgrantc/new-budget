@@ -72,7 +72,6 @@ export default function SignIn({ children }) {
             console.log(error);
         }
 
-        console.log(userDoc);
         dispatchEvent(setUser(userDoc));  // Dispatch the action with serializable data
     };
 
