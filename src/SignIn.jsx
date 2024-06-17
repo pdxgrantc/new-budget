@@ -1,12 +1,13 @@
+import { db, auth } from './firebase';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
-const SignIn = async () => {
+const SignInWithFirebase = async () => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
     try {
         const result = await signInWithPopup(auth, provider);
-        const db = getFirestore();
         const userRef = doc(db, 'users', result.user.uid);
         const userDocSnap = await getDoc(userRef);
 
@@ -58,7 +59,7 @@ const SignIn = async () => {
 
 export default function SignIn({ children }) {
     return (
-        <button onClick={SignIn}>
+        <button onClick={SignInWithFirebase}>
             {children}
         </button>
     )

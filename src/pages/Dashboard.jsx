@@ -1,5 +1,12 @@
+import SignIn from "../SignIn"
+
 export default function Dashboard() {
   return (
-    <div>Dashboard Test</div>
+    <>
+      <SignIn>
+        Ding Dong MOTHAFUCKA
+      </SignIn>
+      <div>Dashboard Test</div>
+    </>
   )
 }

@@ -28,7 +28,6 @@ const SignIn = async () => {
 
     try {
         const result = await signInWithPopup(auth, provider);
-        const db = getFirestore();
         const userRef = doc(db, 'users', result.user.uid);
         const userDocSnap = await getDoc(userRef);
 
