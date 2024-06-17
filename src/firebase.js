@@ -77,8 +77,8 @@ const SignIn = async () => {
     }
 };
 
-const SignOut = () => {
+const SignOutWithFirebase = () => {
     signOut(auth);
 }
 
-export { auth, db, SignIn, SignOut };
+export { auth, db, SignIn, SignOutWithFirebase };
