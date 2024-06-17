@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 // Pages
 import Dashboard from './pages/Dashboard'
+import Header from './utility/Header';
 
 export default function App() {
   return (
@@ -22,6 +23,9 @@ function Root(props) {
 
   return (
     <div>
+      <header>
+        <Header />
+      </header>
       <main>{children || <Outlet />}</main>
       <p>Test</p>
     </div>
