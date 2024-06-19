@@ -1,5 +1,6 @@
 // userSliceHandler.js
 import { createSlice } from '@reduxjs/toolkit';
+import { get } from 'firebase/database';
 
 const initialState = {
     user: null,
@@ -23,9 +24,13 @@ const userSlice = createSlice({
         clearUser: (state) => {
             state.user = null;
         },
+        getUser: () => {
+            console.log(state.user)
+            return state;
+        }
     },
 });
 
-export const { setUser, setLoading, setError, clearUser } = userSlice.actions;
+export const { setUser, setLoading, setError, clearUser, getUser } = userSlice.actions;
 
 export default userSlice.reducer;

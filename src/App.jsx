@@ -1,18 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Link, NavLink } from 'react-router-dom'
 import PropTypes from "prop-types";
 
+// Redux
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/userSlice';
+
 // Firebase
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Utility
 import SignIn from './utility/SignIn';
 import SignOut from './utility/SignOut';
 
 // Pages
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/Dashboard';
 import Header from './utility/Header';
+import Settings from './pages/Settings';
 
 // icons
 import { SiGithub as GitHubLogo } from "react-icons/si";
@@ -21,8 +27,8 @@ import { IoPersonCircleSharp as AboutLogo } from "react-icons/io5";
 import { IoMenu as MenuIcon } from "react-icons/io5";
 
 // Images
-import google_normal from "./assets/btn_google_signin_dark_normal_web@2x.png";
-import google_pressed from "./assets/btn_google_signin_dark_pressed_web@2x.png";
+const google_normal = `./btn_google_signin_dark_normal_web@2x.png`;
+const google_pressed = `./btn_google_signin_dark_pressed_web@2x.png`;
 
 
 export default function App() {
@@ -32,6 +38,8 @@ export default function App() {
         <Route path="/" element={<Root />} caseSensitive={true}>
           <Route index element={<Dashboard />} />
           <Route path="/income" element={<Dashboard />} />
+          <Route path="/spending" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>
@@ -51,7 +59,7 @@ function Root(props) {
             className="bg h-full flex-grow on_desktop:px-20 on_mobile:px-[3vw] pb-10"
             style={{ minHeight: "calc(100vh - 17.5rem)" }}
           >
-            <main>{children || <Outlet />}</main>
+            <SignedIn>{children || <Outlet />}</SignedIn>
           </div>
         ) : (
           <div
@@ -91,6 +99,39 @@ function Root(props) {
 
 Root.propTypes = {
   children: PropTypes.node
+}
+
+function SignedIn(props) {
+  const { children } = props;
+  const [user] = useAuthState(auth);
+  const dispatch = useDispatch();
+
+  // Async function to fetch user data
+  const fetchUserData = async () => {
+    try {
+      // Fetch user data from firebase
+      const userRef = doc(db, 'users', user.uid);
+      const userDocSnap = await getDoc(userRef);
+      // Convert the accountCreated field to an ISO string
+      let cachedUserDoc = userDocSnap.data();
+      cachedUserDoc.accountCreated = cachedUserDoc.accountCreated.toDate().toISOString();  // Convert to ISO string
+      const userDoc = cachedUserDoc;
+      // set state in redux store
+      dispatch(setUser(userDoc));
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  // Use useEffect to call fetchUserData on component mount
+  useEffect(() => {
+    fetchUserData();
+  }, [user.uid]); // Empty dependency array ensures this runs once on mount
+
+  // return root children
+  return (
+    <main>{children}</main>
+  )
 }
 
 function NavBarHost() {
