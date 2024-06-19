@@ -1,6 +1,6 @@
 // userSliceHandler.js
 import { createSlice } from '@reduxjs/toolkit';
-import { get } from 'firebase/database';
+import { WriteUserDoc } from './utils';
 
 const initialState = {
     user: null,
@@ -20,6 +20,13 @@ const userSlice = createSlice({
         },
         setError: (state, action) => {
             state.error = action.payload;
+        },
+        updateUser: async (state, action) => {
+            // update local state
+            state.user = action.payload;
+
+            // Ensure WriteUserDoc has access to the updated state
+            await WriteUserDoc();
         },
         clearUser: (state) => {
             state.user = null;
