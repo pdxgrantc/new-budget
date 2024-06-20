@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { setUser } from '../../redux/userSlice'; // Import the action to update the user in the Redux store
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+
+// Redux
+import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { updateUser } from '../../redux/userSlice'; // Import the action to update the user in the Redux store
+
+// Firebase
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebase';
+
 
 export default function Settings() {
-    const [user] = useAuthState(auth);
     const userSlice = useSelector((state) => state.user.user);
-
-    
 
     const printUserSlice = () => {
         console.log(userSlice);
@@ -36,20 +37,57 @@ export default function Settings() {
 }
 
 function SpendingAccounts() {
+    const dispatch = useDispatch(); // Initialize useDispatch
     const userSlice = useSelector((state) => state.user.user);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // check to see if user input is a duplicate entry 
+        if (userSlice.spendingAccounts.active.includes(e.target.account.value)) {
+            // Clear input
+            e.target.account.value = '';
+            // alert user that account already exists
+            alert('Account already exists');
+            return;
+        }
+
+        const newUserSlice = {
+            ...userSlice,
+            spendingAccounts: {
+                ...userSlice.spendingAccounts,
+                active: [...userSlice.spendingAccounts.active, e.target.account.value],
+            },
+        };
+
+        dispatch(updateUser(newUserSlice)); // Dispatch the action
+
+        e.target.account.value = ''; // Clear input
+    };
+
     if (!userSlice || !userSlice.spendingAccounts || !userSlice.spendingAccounts.active) return null;
     return (
-        <div>
-            <h1>Spending Accounts</h1>
-            {userSlice.spendingAccounts.active.map((account) => (
-                <div key={account}>{account}</div>
-            ))}
-        </div>
+        <>
+            <div>
+                <h1>Spending Accounts</h1>
+                {userSlice.spendingAccounts.active.map((account) => (
+                    <div key={account}>{account}</div>
+                ))}
+            </div>
+            <div>
+                <form onSubmit={handleSubmit}>
+                    <input type="text" name="account" />
+                    <button type="submit">Add Account</button>
+                </form>
+            </div>
+        </>
     );
 }
 
 function SpendingCategories() {
     const userSlice = useSelector((state) => state.user.user);
+    const [userInput, setUserInput] = useState('');
+
     if (!userSlice || !userSlice.spendingCategories || !userSlice.spendingCategories.active) return null;
     return (
         <div>
