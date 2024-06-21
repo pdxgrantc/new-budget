@@ -31,13 +31,15 @@ const userSlice = createSlice({
         clearUser: (state) => {
             state.user = null;
         },
-        getUser: () => {
-            console.log(state.user)
-            return state;
-        }
     },
 });
 
-export const { setUser, setLoading, setError, clearUser, getUser, updateUser } = userSlice.actions;
+export const {
+    setUser,
+    setLoading,
+    setError,
+    clearUser,
+    updateUser
+} = userSlice.actions;
 
 export default userSlice.reducer;
