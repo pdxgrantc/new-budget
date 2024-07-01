@@ -39,12 +39,13 @@ export default function Settings() {
 function SpendingAccounts() {
     const dispatch = useDispatch(); // Initialize useDispatch
     const userSlice = useSelector((state) => state.user.user);
+    const [accountName, setAccountName] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         // check to see if user input is a duplicate entry 
-        if (userSlice.spendingAccounts.active.includes(e.target.account.value)) {
+        if (userSlice.spendingAccounts.active.includes(accountName)) {
             // Clear input
             e.target.account.value = '';
             // alert user that account already exists
@@ -52,17 +53,19 @@ function SpendingAccounts() {
             return;
         }
 
-        const newUserSlice = {
-            ...userSlice,
-            spendingAccounts: {
-                ...userSlice.spendingAccounts,
-                active: [...userSlice.spendingAccounts.active, e.target.account.value],
-            },
-        };
+        let newUserSlice = { ...userSlice }; // Copy the user slice
+        // Create a new array for spendingAccounts.active with the new accountName
+        newUserSlice.spendingAccounts.active = [...newUserSlice.spendingAccounts.active, accountName];
 
         dispatch(updateUser(newUserSlice)); // Dispatch the action
 
-        e.target.account.value = ''; // Clear input
+        setAccountName(''); // Clear input using React state instead of directly manipulating DOM
+    };
+
+    const handleChange = (e) => {
+        setAccountName(e.target.value);
+
+        console.log(accountName);
     };
 
     if (!userSlice || !userSlice.spendingAccounts || !userSlice.spendingAccounts.active) return null;
@@ -76,7 +79,12 @@ function SpendingAccounts() {
             </div>
             <div>
                 <form onSubmit={handleSubmit}>
-                    <input type="text" name="account" />
+                    <input
+                        type="text"
+                        name="spendingAccount"
+                        value={accountName}
+                        onChange={handleChange}
+                    />
                     <button type="submit">Add Account</button>
                 </form>
             </div>

@@ -28,6 +28,9 @@ const userSlice = createSlice({
             // Ensure WriteUserDoc has access to the updated state
             await WriteUserDoc();
         },
+        writeUser: async (state) => {
+            await WriteUserDoc(state.user);
+        },
         clearUser: (state) => {
             state.user = null;
         },
