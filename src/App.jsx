@@ -27,7 +27,7 @@ import google_pressed from "./assets/btn_google_signin_dark_pressed_web@2x.png";
 import Dashboard from "./pages/Dashboard";
 import Income from "./pages/Income";
 import Spending from "./pages/Spending";
-import Settings from "./pages/Settings";
+import Settings from "./pages/Settings/Settings";
 
 
 export default function App() {
